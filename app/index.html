@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0e10">
+  <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Morse">
+  <meta name="description" content="Il tasto del telegrafo con l'albero delle lettere, e il traduttore da italiano a morse e viceversa">
+  <title>Morse</title>
+  <link rel="icon" href="morse-icona.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="morse-icona-180.png">
+  <link rel="stylesheet" href="morse.css">
+  <script type="module" src="morse.js"></script>
+</head>
+<body>
+  <header class="barra">
+    <div class="marchio">
+      <span id="spia" class="spia" aria-hidden="true"></span>
+      <span class="nome">Morse</span>
+    </div>
+    <nav class="schede" role="tablist" aria-label="Sezioni">
+      <button id="scheda-tasto" class="scheda-btn" type="button" role="tab" aria-controls="s-tasto" aria-selected="true" data-scheda="tasto">Tasto</button>
+      <button id="scheda-traduttore" class="scheda-btn" type="button" role="tab" aria-controls="s-traduttore" aria-selected="false" data-scheda="traduttore">Traduttore</button>
+    </nav>
+    <button id="apri-impostazioni" class="icona-btn" type="button" aria-label="Impostazioni" title="Impostazioni">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- Il tasto con l'albero delle lettere -->
+    <section id="s-tasto" class="pagina pagina-tasto" role="tabpanel" aria-labelledby="scheda-tasto">
+      <div class="nastro-box">
+        <div id="nastro" class="nastro" aria-label="Messaggio scritto con il tasto"></div>
+        <p id="annuncio" class="vis-nascosto" aria-live="polite"></p>
+      </div>
+
+      <div class="albero-box">
+        <svg id="albero" class="albero" role="img" aria-label="Albero del codice morse: un punto va a destra, una linea a sinistra o in basso"></svg>
+      </div>
+
+      <div class="comandi">
+        <div class="tasti">
+          <button id="tasto" class="tasto" type="button" aria-label="Tasto: tocco breve punto, pressione lunga linea">
+            <span class="tasto-anello" aria-hidden="true"></span>
+            <span class="tasto-pomello" aria-hidden="true">
+              <span id="tasto-simbolo" class="tasto-simbolo"></span>
+              <span class="tasto-scritta">TASTO</span>
+            </span>
+          </button>
+          <button id="tasto-punto" class="tasto tasto-piccolo" type="button" aria-label="Punto" hidden>
+            <span class="tasto-pomello" aria-hidden="true"><span class="segno-punto"></span></span>
+          </button>
+          <button id="tasto-linea" class="tasto tasto-piccolo" type="button" aria-label="Linea" hidden>
+            <span class="tasto-pomello" aria-hidden="true"><span class="segno-linea"></span></span>
+          </button>
+        </div>
+
+        <div id="pausa" class="pausa" aria-hidden="true">
+          <div id="pausa-barra" class="pausa-barra"></div>
+          <div id="pausa-tacca" class="pausa-tacca"></div>
+        </div>
+        <p class="aiuto"><span id="aiuto-tasto"></span> <span id="aiuto-tastiera" class="solo-tastiera"></span><br>Tocca una lettera dell'albero per sentirla.</p>
+
+        <div class="azioni">
+          <button id="cancella" class="btn" type="button" aria-label="Cancella l'ultimo simbolo o l'ultima lettera">⌫</button>
+          <button id="conferma" class="btn btn-forte" type="button">✓ Lettera</button>
+          <button id="spazio" class="btn" type="button">Spazio</button>
+        </div>
+        <div class="azioni azioni-secondarie">
+          <button id="ascolta-nastro" class="btn btn-piccolo" type="button">▶ Ascolta</button>
+          <button id="copia-nastro" class="btn btn-piccolo" type="button">Copia</button>
+          <button id="traduci-nastro" class="btn btn-piccolo" type="button">Traduci</button>
+          <button id="svuota-nastro" class="btn btn-piccolo" type="button">Svuota</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Traduttore -->
+    <section id="s-traduttore" class="pagina pagina-traduttore" role="tabpanel" aria-labelledby="scheda-traduttore" hidden>
+      <div class="direzione">
+        <span id="lingua-da" class="lingua">Italiano</span>
+        <button id="inverti" class="icona-btn inverti" type="button" aria-label="Inverti: traduci nell'altro verso" title="Inverti">⇄</button>
+        <span id="lingua-a" class="lingua">Morse</span>
+      </div>
+
+      <div class="riquadro">
+        <label for="ingresso" id="etichetta-ingresso" class="vis-nascosto">Testo da tradurre</label>
+        <textarea id="ingresso" class="ingresso" rows="4" autocomplete="off" spellcheck="false"></textarea>
+        <div id="tastiera" class="tastiera" hidden>
+          <button class="btn tastiera-btn" type="button" data-inserisci="." aria-label="Punto"><span class="segno-punto"></span></button>
+          <button class="btn tastiera-btn" type="button" data-inserisci="-" aria-label="Linea"><span class="segno-linea"></span></button>
+          <button class="btn tastiera-btn" type="button" data-inserisci=" ">lettera</button>
+          <button class="btn tastiera-btn" type="button" data-inserisci=" / ">/ parola</button>
+          <button class="btn tastiera-btn" type="button" data-inserisci="⌫" aria-label="Cancella">⌫</button>
+        </div>
+        <div class="riquadro-piede">
+          <p id="suggerimento" class="suggerimento" hidden>
+            <span id="suggerimento-testo"></span>
+            <button id="suggerimento-btn" class="btn btn-piccolo" type="button">Inverti</button>
+          </p>
+          <button id="svuota-ingresso" class="btn btn-piccolo btn-leggero" type="button">Svuota</button>
+        </div>
+      </div>
+
+      <div class="riquadro riquadro-uscita">
+        <div id="uscita" class="uscita" aria-live="polite"></div>
+        <div class="azioni">
+          <button id="ascolta-uscita" class="btn" type="button">▶ Ascolta</button>
+          <button id="albero-uscita" class="btn" type="button">Sull'albero</button>
+          <button id="copia-uscita" class="btn" type="button">Copia</button>
+          <button id="condividi-uscita" class="btn" type="button" hidden>Condividi</button>
+        </div>
+      </div>
+      <p id="note" class="note"></p>
+
+      <details class="riquadro tabella-box">
+        <summary>Tabella dei codici</summary>
+        <p class="aiuto">Tocca un carattere per sentirlo.</p>
+        <div id="tabella"></div>
+      </details>
+    </section>
+  </main>
+
+  <dialog id="impostazioni" class="impostazioni" aria-labelledby="titolo-impostazioni">
+    <h2 id="titolo-impostazioni">Impostazioni</h2>
+
+    <div class="campo">
+      <label for="imp-wpm"><strong>Velocità</strong> <span id="imp-wpm-valore"></span></label>
+      <input id="imp-wpm" type="range" min="5" max="25" step="1">
+      <p id="imp-wpm-aiuto" class="aiuto"></p>
+    </div>
+
+    <fieldset class="campo">
+      <legend><strong>Tasto</strong></legend>
+      <label class="scelta"><input type="radio" name="imp-tasti" value="uno"> <span>Uno solo: tocco breve = punto, tieni premuto = linea</span></label>
+      <label class="scelta"><input type="radio" name="imp-tasti" value="due"> <span>Due: un pulsante per il punto e uno per la linea</span></label>
+    </fieldset>
+
+    <fieldset class="campo">
+      <legend><strong>Fine della lettera</strong></legend>
+      <label class="scelta"><input type="radio" name="imp-fine" value="pausa"> <span>Dopo una pausa</span></label>
+      <label class="scelta"><input type="radio" name="imp-fine" value="tasto"> <span>Solo con «✓ Lettera»: ci si muove sull'albero senza fretta</span></label>
+      <label class="scelta"><input id="imp-spazio" type="checkbox"> <span>Spazio tra le parole dopo una pausa lunga</span></label>
+    </fieldset>
+
+    <fieldset class="campo">
+      <legend><strong>Suono</strong></legend>
+      <label class="scelta"><input id="imp-suono" type="checkbox"> <span>Bip mentre si batte e si ascolta</span></label>
+      <label for="imp-nota" class="riga-nota">Nota <span id="imp-nota-valore"></span></label>
+      <div class="riga-prova">
+        <input id="imp-nota" type="range" min="400" max="1000" step="10">
+        <button id="imp-prova" class="btn btn-piccolo" type="button">Prova</button>
+      </div>
+    </fieldset>
+
+    <div class="azioni">
+      <button id="chiudi-impostazioni" class="btn btn-forte" type="button">Fatto</button>
+    </div>
+  </dialog>
+</body>
+</html>
