@@ -55,6 +55,8 @@ const sogliaLinea = () => 2 * unita(); // premuto più a lungo di così: linea
 const pausaLettera = () => 5 * unita(); // dopo l'ultimo simbolo: la lettera si chiude
 const pausaParola = () => 12 * unita(); // dopo l'ultimo simbolo: arriva lo spazio
 
+let aiutoNastro = "";
+
 const suono = new Suono();
 const riproduttore = new Riproduttore(suono);
 
@@ -65,9 +67,10 @@ function applicaImpostazioni() {
   $("tasto").hidden = due;
   $("tasto-punto").hidden = !due;
   $("tasto-linea").hidden = !due;
-  $("aiuto-tasto").textContent = due
-    ? "Un pulsante per il punto e uno per la linea."
-    : `Tocco breve = punto, tieni premuto più di ${Math.round(sogliaLinea())} ms = linea.`;
+  $("comandi").classList.toggle("due-tasti", due);
+  aiutoNastro = due
+    ? "Tasto di sinistra = punto, di destra = linea"
+    : "Tocco breve = punto, tieni premuto = linea";
   $("aiuto-tastiera").textContent = due
     ? "Da tastiera: . e -, Invio chiude la lettera."
     : "Da tastiera: barra spaziatrice, Invio chiude la lettera.";
@@ -79,6 +82,7 @@ function applicaImpostazioni() {
 function salvaImpostazioni() {
   memoria.scrivi("impostazioni", imp);
   applicaImpostazioni();
+  disegnaNastro();
 }
 
 // --- Disegno dei codici con punti e linee (il testo resta ".-" per copiarlo) ---
@@ -142,7 +146,6 @@ function passo() {
     const p = Math.min(1, (ora - stato.premuto.t0) / sogliaLinea());
     tasto.style.setProperty("--p", p.toFixed(3));
     tasto.classList.toggle("linea", p >= 1);
-    $("tasto-simbolo").className = `tasto-simbolo ${p >= 1 ? "segno-linea" : "segno-punto"}`;
   }
 
   if (stato.attesaLettera && ora - stato.ultimo >= pausaLettera()) chiudiLettera();
@@ -193,7 +196,6 @@ function rilascia(id) {
   const tasto = $("tasto");
   tasto.classList.remove("giu", "linea");
   tasto.style.setProperty("--p", "0");
-  $("tasto-simbolo").className = "tasto-simbolo";
   albero.trasmette(false);
   spia(false);
   aggiungiSimbolo(durata >= sogliaLinea() ? "-" : ".", ora);
@@ -347,7 +349,7 @@ function disegnaNastro() {
   if (!caratteri.length && !stato.seq) {
     const vuoto = document.createElement("span");
     vuoto.className = "nastro-vuoto";
-    vuoto.textContent = "Premi il tasto: il messaggio compare qui";
+    vuoto.textContent = aiutoNastro;
     frammento.append(vuoto);
   }
   nastro.replaceChildren(frammento);
@@ -362,8 +364,7 @@ let fineRiproduzione = null;
 // del percorso simbolo per simbolo; "el" viene evidenziato mentre suona.
 function suonaLettere(lettere, { sullAlbero = false, pulsante = null } = {}) {
   riproduttore.ferma();
-  const etichetta = pulsante?.textContent;
-  if (pulsante) pulsante.textContent = "■ Ferma";
+  if (pulsante) segnaAscolto(pulsante, true);
   let evidenziato = null;
   const togliEvidenza = () => {
     evidenziato?.classList.remove("suona");
@@ -371,7 +372,7 @@ function suonaLettere(lettere, { sullAlbero = false, pulsante = null } = {}) {
   };
   fineRiproduzione = () => {
     togliEvidenza();
-    if (pulsante) pulsante.textContent = etichetta;
+    if (pulsante) segnaAscolto(pulsante, false);
     if (sullAlbero) aggiornaTasto();
   };
   riproduttore.riproduci(lettere, imp.wpm, {
@@ -412,11 +413,19 @@ function mostraElemento(el) {
   }
 }
 
-// Pulsante Ascolta che diventa Ferma mentre suona
+// Pulsante Ascolta che diventa Ferma mentre suona: con la scritta (traduttore) cambia la
+// scritta, con l'icona (tasto) cambia l'icona
+function segnaAscolto(pulsante, attivo) {
+  pulsante.classList.toggle("in-ascolto", attivo);
+  pulsante.setAttribute("aria-label", attivo ? "Ferma" : "Ascolta");
+  if (pulsante.title) pulsante.title = attivo ? "Ferma" : "Ascolta";
+  if (!pulsante.querySelector("svg")) pulsante.textContent = attivo ? "■ Ferma" : "▶ Ascolta";
+}
+
 function interruttoreAscolto(pulsante, prepara) {
   pulsante.addEventListener("click", () => {
     suono.contesto(); // dentro il tocco: sblocca l'audio su iPhone
-    if (riproduttore.attivo && pulsante.textContent.startsWith("■")) {
+    if (riproduttore.attivo && pulsante.classList.contains("in-ascolto")) {
       riproduttore.ferma();
       return;
     }
@@ -473,7 +482,10 @@ interruttoreAscolto($("ascolta-nastro"), () => {
   return { lettere, sullAlbero: true };
 });
 
-$("copia-nastro").addEventListener("click", (e) => copia(stato.testo.trim(), e.currentTarget));
+$("copia-nastro").addEventListener("click", () => {
+  if (stato.testo.trim()) copia(stato.testo.trim());
+  else avviso("Il messaggio è vuoto");
+});
 
 $("traduci-nastro").addEventListener("click", () => {
   chiudiLettera();
@@ -490,7 +502,7 @@ conferma2($("svuota-nastro"), () => {
   stato.ultimaLettera = null;
   scrivi("");
   aggiornaTasto();
-});
+}, "Tocca di nuovo per svuotare il messaggio");
 
 // Tastiera del computer, solo nella pagina del tasto e fuori dai campi di testo
 function tastieraAttiva(e) {
@@ -706,7 +718,7 @@ $("albero-uscita").addEventListener("click", () => {
   suonaLettere(lettere, { sullAlbero: true, pulsante: $("ascolta-nastro") });
 });
 
-$("copia-uscita").addEventListener("click", (e) => copia(traduzione.testo, e.currentTarget));
+$("copia-uscita").addEventListener("click", () => copia(traduzione.testo));
 
 if (navigator.share) {
   $("condividi-uscita").hidden = false;
@@ -744,7 +756,7 @@ function disegnaTabella() {
 
 // --- Copia negli appunti (anche in http, dove navigator.clipboard non c'è) ---
 
-async function copia(testo, pulsante) {
+async function copia(testo) {
   if (!testo) return;
   let fatto = false;
   try {
@@ -770,37 +782,32 @@ async function copia(testo, pulsante) {
     }
     area.remove();
   }
-  avvisoBreve(pulsante, fatto ? "Copiato ✓" : "Non riesco");
+  avviso(fatto ? "Copiato ✓" : "Non riesco a copiare");
 }
 
-function avvisoBreve(pulsante, messaggio) {
-  if (!pulsante.dataset.etichetta) pulsante.dataset.etichetta = pulsante.textContent;
-  pulsante.textContent = messaggio;
-  clearTimeout(pulsante._timer);
-  pulsante._timer = setTimeout(() => {
-    pulsante.textContent = pulsante.dataset.etichetta;
-    delete pulsante.dataset.etichetta;
-  }, 1500);
+// Fumetto in basso che sparisce da solo
+let timerAvviso = 0;
+function avviso(messaggio) {
+  const box = $("avviso");
+  box.textContent = messaggio;
+  box.classList.add("visibile");
+  clearTimeout(timerAvviso);
+  timerAvviso = setTimeout(() => box.classList.remove("visibile"), 1800);
 }
 
 // Pulsante che chiede conferma con un secondo tocco
-function conferma2(pulsante, azione) {
-  const etichetta = pulsante.textContent;
+function conferma2(pulsante, azione, domanda) {
   let timer = 0;
   pulsante.addEventListener("click", () => {
     if (pulsante.classList.contains("sicuro")) {
       clearTimeout(timer);
       pulsante.classList.remove("sicuro");
-      pulsante.textContent = etichetta;
       azione();
       return;
     }
     pulsante.classList.add("sicuro");
-    pulsante.textContent = "Sicuro?";
-    timer = setTimeout(() => {
-      pulsante.classList.remove("sicuro");
-      pulsante.textContent = etichetta;
-    }, 3000);
+    avviso(domanda);
+    timer = setTimeout(() => pulsante.classList.remove("sicuro"), 3000);
   });
 }
 

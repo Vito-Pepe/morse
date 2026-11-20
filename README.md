@@ -12,14 +12,16 @@ L'albero è disegnato come le tessere "morse code" con le lucine: si parte dall'
 - **Tocco breve = punto, tieni premuto = linea.** Mentre tieni premuto, l'anello intorno al tasto si riempie: quando diventa rosso è una linea.
 - Si accendono le luci del percorso (verdi i punti, rosse le linee) e lo schermino in basso a destra mostra la lettera a cui sei arrivato.
 - Dopo una breve pausa la lettera si scrive sul nastro in alto, con il suo codice sotto; dopo una pausa più lunga arriva lo spazio. La barretta sotto il tasto mostra quanto manca (la tacca segna la lettera, la fine della barra lo spazio).
-- `⌫` toglie l'ultimo simbolo (o l'ultima lettera), `✓ Lettera` la chiude subito, `Spazio` aggiunge uno spazio.
-- `Ascolta` ripete il messaggio con il suono e le luci che corrono sull'albero; `Traduci` lo porta nel traduttore.
+- Il tasto (con il disegno di un tasto del telegrafo: premendolo la leva si abbassa) sta a sinistra, i pulsanti alla sua destra, così sul telefono albero, tasto e pulsanti si vedono insieme senza scorrere:
+  - `⌫` toglie l'ultimo simbolo (o l'ultima lettera), `Spazio` aggiunge uno spazio, `✓ Lettera` chiude subito la lettera;
+  - `Ascolta` ripete il messaggio con il suono e le luci che corrono sull'albero (toccandolo di nuovo si ferma), `Copia` lo copia, `Traduci` lo porta nel traduttore, `Svuota` lo cancella (va toccato due volte).
+- Con **due tasti** (impostazioni) il punto è a sinistra e la linea a destra, con i pulsanti in mezzo: uno per pollice.
 - Toccando una lettera dell'albero se ne vede e sente il codice (senza scriverla).
 - Dal computer: barra spaziatrice come tasto, `.` e `-` per punto e linea, Invio chiude la lettera, Backspace cancella.
 
 Nelle **impostazioni** (icona in alto a destra):
 - **velocità** in parole al minuto (5–25; dalla velocità dipendono la durata di punto e linea, quanto tenere premuto per una linea e la pausa che chiude la lettera);
-- **due tasti** al posto di uno, uno per il punto e uno per la linea;
+- **due tasti** al posto di uno: punto a sinistra, linea a destra;
 - **fine della lettera** solo con `✓ Lettera`: ci si muove sull'albero senza fretta, come con la tessera;
 - spazio automatico, suono e nota del bip.
 
