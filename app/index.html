@@ -43,40 +43,72 @@
         <svg id="albero" class="albero" role="img" aria-label="Albero del codice morse: un punto va a destra, una linea a sinistra o in basso"></svg>
       </div>
 
-      <div class="comandi">
-        <div class="tasti">
-          <button id="tasto" class="tasto" type="button" aria-label="Tasto: tocco breve punto, pressione lunga linea">
-            <span class="tasto-anello" aria-hidden="true"></span>
-            <span class="tasto-pomello" aria-hidden="true">
-              <span id="tasto-simbolo" class="tasto-simbolo"></span>
-              <span class="tasto-scritta">TASTO</span>
-            </span>
-          </button>
+      <div class="comandi-box">
+        <div id="comandi" class="comandi">
+          <!-- Due tasti: il punto a sinistra e la linea a destra, uno per pollice -->
           <button id="tasto-punto" class="tasto tasto-piccolo" type="button" aria-label="Punto" hidden>
             <span class="tasto-pomello" aria-hidden="true"><span class="segno-punto"></span></span>
           </button>
+
+          <button id="tasto" class="tasto" type="button" aria-label="Tasto: tocco breve punto, pressione lunga linea">
+            <span class="tasto-anello" aria-hidden="true"></span>
+            <span class="tasto-pomello" aria-hidden="true">
+              <!-- Tasto del telegrafo: pomello, leva sul perno, molla e base -->
+              <svg class="tasto-icona" viewBox="2 15 60 43">
+                <rect x="5" y="49" width="54" height="7" rx="3"/>
+                <rect x="40" y="38" width="12" height="12" rx="2"/>
+                <circle cx="46" cy="36" r="4.5"/>
+                <path class="molla" d="M27 49 l-3 -2 l6 -2.2 l-6 -2.2 l6 -2.2 l-3 -2"/>
+                <rect x="11" y="44" width="5" height="5" rx="1"/>
+                <g class="leva">
+                  <path class="leva-asta" d="M10 34.5 L58 36.5"/>
+                  <rect x="11.5" y="27" width="4" height="7" rx="1"/>
+                  <path d="M3.5 22 v4 a10 4.2 0 0 0 20 0 v-4 z"/>
+                  <ellipse class="pomello-cima" cx="13.5" cy="22" rx="10" ry="4.2"/>
+                </g>
+              </svg>
+            </span>
+          </button>
+
+          <div class="pulsantiera">
+            <div class="pulsanti-riga">
+              <button id="cancella" class="btn btn-icona" type="button" aria-label="Cancella l'ultimo simbolo o l'ultima lettera" title="Cancella">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z"/><path d="M12 9l6 6M18 9l-6 6"/></svg>
+              </button>
+              <button id="spazio" class="btn" type="button" aria-label="Spazio">Spazio</button>
+              <button id="conferma" class="btn btn-forte" type="button" aria-label="Chiudi la lettera">✓<span class="lungo"> Lettera</span></button>
+            </div>
+            <div class="pulsanti-piccoli">
+              <button id="ascolta-nastro" class="btn btn-mini" type="button" aria-label="Ascolta" title="Ascolta">
+                <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path class="pieno" d="M8 5v14l11-7z"/></svg>
+                <svg class="ico-stop" viewBox="0 0 24 24" aria-hidden="true"><rect class="pieno" x="6" y="6" width="12" height="12" rx="2"/></svg>
+                <span class="didascalia">Ascolta</span>
+              </button>
+              <button id="copia-nastro" class="btn btn-mini" type="button" aria-label="Copia il messaggio" title="Copia">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>
+                <span class="didascalia">Copia</span>
+              </button>
+              <button id="traduci-nastro" class="btn btn-mini" type="button" aria-label="Porta il messaggio nel traduttore" title="Traduci">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg>
+                <span class="didascalia">Traduci</span>
+              </button>
+              <button id="svuota-nastro" class="btn btn-mini" type="button" aria-label="Svuota il messaggio" title="Svuota">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                <span class="didascalia">Svuota</span>
+              </button>
+            </div>
+          </div>
+
           <button id="tasto-linea" class="tasto tasto-piccolo" type="button" aria-label="Linea" hidden>
             <span class="tasto-pomello" aria-hidden="true"><span class="segno-linea"></span></span>
           </button>
-        </div>
 
-        <div id="pausa" class="pausa" aria-hidden="true">
-          <div id="pausa-barra" class="pausa-barra"></div>
-          <div id="pausa-tacca" class="pausa-tacca"></div>
+          <div id="pausa" class="pausa" aria-hidden="true">
+            <div id="pausa-barra" class="pausa-barra"></div>
+            <div id="pausa-tacca" class="pausa-tacca"></div>
+          </div>
         </div>
-        <p class="aiuto"><span id="aiuto-tasto"></span> <span id="aiuto-tastiera" class="solo-tastiera"></span><br>Tocca una lettera dell'albero per sentirla.</p>
-
-        <div class="azioni">
-          <button id="cancella" class="btn" type="button" aria-label="Cancella l'ultimo simbolo o l'ultima lettera">⌫</button>
-          <button id="conferma" class="btn btn-forte" type="button">✓ Lettera</button>
-          <button id="spazio" class="btn" type="button">Spazio</button>
-        </div>
-        <div class="azioni azioni-secondarie">
-          <button id="ascolta-nastro" class="btn btn-piccolo" type="button">▶ Ascolta</button>
-          <button id="copia-nastro" class="btn btn-piccolo" type="button">Copia</button>
-          <button id="traduci-nastro" class="btn btn-piccolo" type="button">Traduci</button>
-          <button id="svuota-nastro" class="btn btn-piccolo" type="button">Svuota</button>
-        </div>
+        <p class="aiuto aiuto-tasto">Tocca una lettera dell'albero per sentirla. <span id="aiuto-tastiera" class="solo-tastiera"></span></p>
       </div>
     </section>
 
@@ -162,5 +194,7 @@
       <button id="chiudi-impostazioni" class="btn btn-forte" type="button">Fatto</button>
     </div>
   </dialog>
+
+  <div id="avviso" class="avviso" role="status" aria-live="polite"></div>
 </body>
 </html>
