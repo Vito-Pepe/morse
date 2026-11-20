@@ -1,0 +1,986 @@
+/* Morse: tema scuro con l'oro della tessera. Nomi propri dei file (morse.css, morse.js):
+   altre app sullo stesso indirizzo non se li prendono dalla cache. */
+
+:root {
+  --sfondo: #0d0e10;
+  --sfondo-2: #17181c;
+  --pannello: #1b1c20;
+  --pannello-2: #24252b;
+  --bordo: rgba(214, 180, 106, 0.22);
+  --testo: #f3eee3;
+  --tenue: #a8a091;
+  --oro: #d2ad62;
+  --oro-chiaro: #f6dc9b;
+  --oro-scuro: #8b6d34;
+  --spento: #2c3024;
+  --verde: #5ee08c;
+  --rosso: #f2545b;
+  --raggio: 16px;
+  --font-codice: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--testo);
+  background: radial-gradient(120% 70% at 50% 0%, var(--sfondo-2) 0%, var(--sfondo) 65%) fixed, var(--sfondo);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;
+}
+
+.vis-nascosto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.fuori-schermo {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  opacity: 0;
+}
+
+/* --- Barra in alto --- */
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: max(0.6rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 0.6rem max(1rem, env(safe-area-inset-left));
+  background: rgba(13, 14, 16, 0.86);
+  border-bottom: 1px solid var(--bordo);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.marchio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  color: var(--oro-chiaro);
+  text-transform: uppercase;
+}
+
+.spia {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--spento);
+  border: 2px solid var(--oro-scuro);
+  transition: background 0.04s, box-shadow 0.04s;
+}
+
+.spia.accesa {
+  background: var(--oro-chiaro);
+  box-shadow: 0 0 10px 3px rgba(246, 220, 155, 0.7);
+}
+
+.schede {
+  display: flex;
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--pannello);
+  border: 1px solid var(--bordo);
+}
+
+.scheda-btn {
+  border: 0;
+  background: none;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--tenue);
+  cursor: pointer;
+}
+
+.scheda-btn[aria-selected="true"] {
+  background: linear-gradient(180deg, var(--oro-chiaro), var(--oro));
+  color: #1a1408;
+}
+
+.icona-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--bordo);
+  background: var(--pannello);
+  cursor: pointer;
+  flex: none;
+}
+
+.icona-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--oro-chiaro);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* --- Struttura --- */
+
+main {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1rem max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+.pagina {
+  animation: entra 0.22s ease-out;
+}
+
+@keyframes entra {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.aiuto {
+  color: var(--tenue);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* --- Pulsanti --- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--bordo);
+  background: var(--pannello-2);
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.08s;
+}
+
+.btn:hover {
+  background: #2e2f36;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn:focus-visible,
+.scheda-btn:focus-visible,
+.icona-btn:focus-visible,
+.tasto:focus-visible,
+.cella:focus-visible {
+  outline: 3px solid var(--oro-chiaro);
+  outline-offset: 2px;
+}
+
+.btn-forte {
+  background: linear-gradient(180deg, var(--oro-chiaro), var(--oro));
+  color: #1a1408;
+  border-color: transparent;
+}
+
+.btn-forte:hover {
+  background: linear-gradient(180deg, #fbe7b4, var(--oro));
+}
+
+.btn-piccolo {
+  min-height: 2.3rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.btn-leggero {
+  background: none;
+}
+
+.btn.sicuro {
+  background: var(--rosso);
+  color: #fff;
+}
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* --- Pagina del tasto --- */
+
+.pagina-tasto {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-areas:
+    "nastro"
+    "albero"
+    "comandi";
+}
+
+.nastro-box { grid-area: nastro; }
+.albero-box { grid-area: albero; }
+.comandi { grid-area: comandi; }
+
+@media (min-width: 860px) {
+  .pagina-tasto {
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    grid-template-areas:
+      "nastro nastro"
+      "albero comandi";
+    align-items: center;
+    column-gap: 2rem;
+  }
+
+}
+
+/* Nastro del telegrafo */
+
+.nastro {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.15rem;
+  min-height: 4.2rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--raggio);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(0, 0, 0, 0.035) 22px 23px),
+    linear-gradient(180deg, #f4ecd8, #e8dcc0);
+  color: #2b2414;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.nastro .col {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: none;
+  min-width: 1.4rem;
+  padding: 0.15rem 0.15rem 0.2rem;
+  border-radius: 8px;
+}
+
+.nastro .col.spazio {
+  min-width: 1.1rem;
+}
+
+.nastro .c {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.nastro .col.in-corso .c {
+  color: #9b8b63;
+}
+
+.nastro .col.suona {
+  background: rgba(210, 173, 98, 0.45);
+}
+
+.nastro .codice {
+  color: #6b5a36;
+}
+
+.nastro-vuoto {
+  align-self: center;
+  color: #8a7b5a;
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
+}
+
+.cursore {
+  flex: none;
+  width: 3px;
+  height: 1.7rem;
+  margin-bottom: 1.25rem;
+  background: #2b2414;
+  border-radius: 2px;
+  animation: lampeggia 1.1s steps(1) infinite;
+}
+
+@keyframes lampeggia {
+  50% { opacity: 0; }
+}
+
+/* Codice disegnato: il testo resta ".-" (si copia così), si vedono pallini e trattini */
+
+.codice {
+  display: inline;
+  white-space: nowrap;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.codice .p,
+.codice .l {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.18em;
+  height: 0.42em;
+  color: transparent;
+  overflow: hidden;
+  border-radius: 0.21em;
+  /* Il testo è trasparente: il colore del segno arriva da --segno */
+  background-color: var(--segno, #6b5a36);
+}
+
+.codice .p { width: 0.42em; }
+.codice .l { width: 1.2em; }
+.codice > :last-child { margin-right: 0; }
+
+.nastro .codice { --segno: #6b5a36; font-size: 0.8rem; line-height: 0.6; }
+
+.segno-punto,
+.segno-linea {
+  display: inline-block;
+  height: 14px;
+  border-radius: 7px;
+  background: currentColor;
+}
+
+.segno-punto { width: 14px; }
+.segno-linea { width: 40px; }
+
+/* Albero */
+
+.albero-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.albero {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  aspect-ratio: 600 / 680;
+  max-height: 54vh;
+  max-height: 54dvh;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.albero-box.scuoti .albero {
+  animation: scuoti 0.4s ease;
+}
+
+@keyframes scuoti {
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+.albero .sfondo-1 { stop-color: #1b1b1a; }
+.albero .sfondo-2 { stop-color: #0a0a0a; }
+
+.albero .tessera {
+  fill: url(#morse-sfondo);
+  stroke: var(--oro);
+  stroke-width: 4;
+}
+
+.albero .tessera-bordo {
+  fill: none;
+  stroke: var(--oro-scuro);
+  stroke-width: 1.5;
+}
+
+.albero .titolo {
+  fill: var(--oro-chiaro);
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.albero .antenna-asta {
+  fill: none;
+  stroke: var(--oro);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
+.albero .onde path {
+  fill: none;
+  stroke: var(--oro-chiaro);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+
+.albero.trasmette .onde path {
+  opacity: 1;
+}
+
+.albero.trasmette .antenna-asta {
+  stroke: var(--oro-chiaro);
+}
+
+.albero .ramo {
+  stroke: var(--oro);
+  stroke-width: 3.5;
+  transition: stroke 0.12s;
+}
+
+.albero .ramo.acceso {
+  stroke: var(--oro-chiaro);
+  stroke-width: 5;
+}
+
+.albero .forma {
+  fill: var(--spento);
+  stroke: var(--oro);
+  stroke-width: 3.5;
+  transition: fill 0.12s;
+}
+
+.albero .alone {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.albero .punto .alone { fill: var(--verde); }
+.albero .linea .alone { fill: var(--rosso); }
+
+.albero .acceso.punto .forma { fill: var(--verde); stroke: #c8ffd9; }
+.albero .acceso.linea .forma { fill: var(--rosso); stroke: #ffd0d2; }
+.albero .acceso .alone { opacity: 0.45; }
+.albero .corrente .alone { opacity: 0.95; }
+
+.albero .etichetta {
+  fill: var(--oro);
+  font-size: 30px;
+  font-weight: 500;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  transition: fill 0.12s;
+}
+
+.albero .acceso .etichetta { fill: var(--oro-chiaro); }
+.albero .corrente .etichetta { fill: #fff; font-weight: 800; }
+
+.albero .tocca {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.albero .schermo {
+  fill: #070807;
+  stroke: var(--oro-scuro);
+  stroke-width: 2;
+}
+
+.albero .schermo-lettera {
+  fill: var(--oro-chiaro);
+  font-size: 88px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.albero .schermo-lettera.parziale { fill: #776a4b; }
+.albero .schermo-lettera.errore { fill: var(--rosso); }
+.albero .schermo-lettera.scritta { fill: var(--verde); }
+
+.albero .schermo-nota {
+  fill: #776a4b;
+  font-size: 20px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: 1px;
+}
+
+.albero .simbolo.punto { fill: var(--verde); }
+.albero .simbolo.linea { fill: var(--rosso); }
+
+.solo-tastiera { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .solo-tastiera { display: inline; }
+}
+
+/* Tasto del telegrafo */
+
+.comandi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.tasti {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  padding-top: 0.2rem;
+}
+
+.tasto {
+  --p: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Anello che si riempie mentre il tasto è premuto: pieno = linea */
+.tasto-anello {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--verde) calc(var(--p) * 360deg), rgba(255, 255, 255, 0.08) 0);
+  transition: background 0.05s;
+}
+
+.tasto.linea .tasto-anello {
+  background: var(--rosso);
+  box-shadow: 0 0 22px rgba(242, 84, 91, 0.55);
+}
+
+.tasto-pomello {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.3rem;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 28%, #fff4d2 0%, #e9c77d 22%, #b58b3f 60%, #7c5a22 100%);
+  box-shadow:
+    0 8px 0 #5a3f14,
+    0 14px 24px rgba(0, 0, 0, 0.55),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.25);
+  color: #3b2a0c;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+
+.tasto.giu .tasto-pomello,
+.tasto-piccolo:active .tasto-pomello {
+  transform: translateY(6px);
+  box-shadow:
+    0 2px 0 #5a3f14,
+    0 4px 10px rgba(0, 0, 0, 0.5),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tasto-scritta {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.tasto-simbolo {
+  min-height: 14px;
+  color: #3b2a0c;
+}
+
+.tasto-piccolo {
+  width: 112px;
+  height: 112px;
+}
+
+.tasto-piccolo .tasto-pomello {
+  width: 100%;
+  height: 100%;
+}
+
+/* Barra della pausa: quando è piena la lettera si chiude; la tacca segna la lettera,
+   la fine della barra lo spazio */
+.pausa {
+  position: relative;
+  width: min(260px, 80%);
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.pausa-barra {
+  width: 0;
+  height: 100%;
+  background: var(--oro);
+  border-radius: 3px;
+}
+
+.pausa-barra.parola {
+  background: var(--verde);
+}
+
+.pausa-tacca {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--tenue);
+}
+
+.azioni-secondarie {
+  margin-top: 0.2rem;
+}
+
+/* --- Traduttore --- */
+
+.pagina-traduttore {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.direzione {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.lingua {
+  min-width: 6.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--oro-chiaro);
+}
+
+.inverti {
+  font-size: 1.3rem;
+  color: var(--oro-chiaro);
+}
+
+.riquadro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border-radius: var(--raggio);
+  background: var(--pannello);
+  border: 1px solid var(--bordo);
+}
+
+.ingresso {
+  width: 100%;
+  min-height: 7rem;
+  resize: vertical;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid var(--bordo);
+  background: #121316;
+  color: var(--testo);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.ingresso.morse {
+  font-family: var(--font-codice);
+  letter-spacing: 0.08em;
+}
+
+.ingresso:focus {
+  outline: 2px solid var(--oro);
+  outline-offset: 1px;
+}
+
+.tastiera {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr 1.4fr 0.9fr;
+  gap: 0.4rem;
+}
+
+.tastiera-btn {
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  min-height: 3rem;
+}
+
+.tastiera .segno-punto { width: 12px; height: 12px; }
+.tastiera .segno-linea { width: 32px; height: 12px; }
+
+.riquadro-piede {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.riquadro-piede .btn-leggero {
+  margin-left: auto;
+}
+
+.suggerimento {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--oro-chiaro);
+  font-size: 0.9rem;
+}
+
+.uscita {
+  min-height: 5.5rem;
+  padding: 0.3rem 0.2rem;
+  font-size: 1.35rem;
+  line-height: 1.7;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.uscita .riga {
+  min-height: 1.7em;
+}
+
+.uscita.morse .codice {
+  --segno: var(--oro-chiaro);
+  font-size: 1.05rem;
+  padding: 0.15em 0.3em;
+  border-radius: 6px;
+}
+
+.uscita .sep {
+  color: var(--tenue);
+}
+
+.uscita .lettera {
+  border-radius: 6px;
+  transition: background 0.1s;
+}
+
+.uscita .lettera.suona {
+  background: rgba(210, 173, 98, 0.35);
+}
+
+.uscita .ignoto {
+  color: var(--rosso);
+}
+
+.uscita-vuota {
+  color: var(--tenue);
+  font-size: 1rem;
+}
+
+.riquadro-uscita .azioni {
+  justify-content: flex-start;
+}
+
+.note {
+  color: var(--tenue);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.note:empty {
+  display: none;
+}
+
+/* Tabella dei codici */
+
+.tabella-box summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--oro-chiaro);
+}
+
+.tabella-box .aiuto {
+  text-align: left;
+}
+
+.tabella-box h3 {
+  margin: 0.4rem 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--tenue);
+}
+
+.griglia-codici {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.4rem;
+}
+
+.cella {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.3rem;
+  border-radius: 10px;
+  border: 1px solid var(--bordo);
+  background: var(--pannello-2);
+  cursor: pointer;
+}
+
+.cella .c {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.cella .codice {
+  --segno: var(--oro);
+  font-size: 0.75rem;
+}
+
+.cella.suona {
+  background: rgba(210, 173, 98, 0.3);
+}
+
+/* --- Impostazioni --- */
+
+.impostazioni {
+  width: min(460px, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 1.2rem;
+  border-radius: 20px;
+  border: 1px solid var(--bordo);
+  background: var(--pannello);
+  color: var(--testo);
+}
+
+.impostazioni::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.impostazioni h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: var(--oro-chiaro);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  border: 0;
+}
+
+.campo legend {
+  margin-bottom: 0.4rem;
+}
+
+.campo .aiuto {
+  text-align: left;
+}
+
+.campo input[type="range"] {
+  width: 100%;
+  accent-color: var(--oro);
+}
+
+.scelta {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.scelta input {
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  accent-color: var(--oro);
+}
+
+.riga-nota {
+  color: var(--tenue);
+  font-size: 0.9rem;
+}
+
+.riga-prova {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* --- Schermi larghi: l'albero può essere più grande --- */
+
+@media (min-width: 860px) {
+  .albero {
+    max-height: min(78vh, 700px);
+  }
+}
+
+/* --- Telefono --- */
+
+@media (max-width: 420px) {
+  .barra { gap: 0.5rem; }
+  .marchio .nome { font-size: 1rem; }
+  .scheda-btn { padding: 0.4rem 0.7rem; font-size: 0.9rem; }
+  .tasto { width: 120px; height: 120px; }
+  .tasto-piccolo { width: 100px; height: 100px; }
+  .btn { padding: 0.5rem 0.8rem; }
+  .tastiera { grid-template-columns: 1fr 1fr 1fr 1.2fr 0.8fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina, .albero-box.scuoti .albero { animation: none; }
+  .cursore { animation: none; }
+}
