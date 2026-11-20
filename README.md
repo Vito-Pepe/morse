@@ -78,7 +78,7 @@ Per provare la pagina sul PC senza Docker basta un server di file statici nella 
 
 ## Sicurezza
 
-Il container è in sola lettura (`read_only`, con le cartelle temporanee di nginx in memoria), senza capacità di Linux tranne le tre che servono a nginx per partire con l'utente `nginx`, `no-new-privileges` e limite di processi; ha un `healthcheck`, così il guardiano lo riavvia se si blocca. La pagina non chiama nessun indirizzo esterno (Content-Security-Policy `default-src 'self'`), non usa cookie e niente esce su Internet. Testo, impostazioni e ultima scheda aperta restano solo nella memoria del browser.
+Il container è in sola lettura (`read_only`, con le cartelle temporanee di nginx in memoria), senza capacità di Linux tranne le tre che servono a nginx per partire con l'utente `nginx`, `no-new-privileges` e limite di processi; ha un `healthcheck`, così il guardiano lo riavvia se si blocca. Il controllo (un `wget` dal container stesso ogni minuto) non finisce nel log: lì, e nella pagina del guardiano, restano solo le visite vere. La pagina non chiama nessun indirizzo esterno (Content-Security-Policy `default-src 'self'`), non usa cookie e niente esce su Internet. Testo, impostazioni e ultima scheda aperta restano solo nella memoria del browser.
 
 ## Porte
 
